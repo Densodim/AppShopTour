@@ -1,3 +1,19 @@
+This repository is being used as a training project for building a full mobile product with a Kotlin backend.
+
+Current focus:
+
+- Android client
+- iOS client
+- shared Kotlin business logic
+- Ktor backend
+- PostgreSQL and VDS deployment
+
+The starter template still contains web and desktop targets, but they are not the main priority for the first stages of the project.
+
+Project architecture and module responsibilities are described in [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md).
+
+---
+
 This is a Kotlin Multiplatform project targeting Android, iOS, Web, Desktop (JVM), Server.
 
 * [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
