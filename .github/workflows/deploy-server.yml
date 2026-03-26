@@ -21,6 +21,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Lowercase image name
+        run: echo "IMAGE_NAME=$(echo $IMAGE_NAME | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
