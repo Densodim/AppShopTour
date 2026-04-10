@@ -61,18 +61,9 @@ private fun configureDatabase() {
         maximumPoolSize = 10
     })
 
-    // Flyway 10+: classpath: не работает в fat JAR (Docker).
-    // В Docker используем filesystem: — SQL-файлы скопированы в /app/db/migration.
-    // Локально (H2) используем classpath: — файлы доступны из ресурсов проекта.
-    val flywayLocation = if (jdbcUrl != null) {
-        "filesystem:/app/db/migration"
-    } else {
-        "classpath:db/migration"
-    }
-
     Flyway.configure()
         .dataSource(dataSource)
-        .locations(flywayLocation)
+        .locations("classpath:db/migration")
         .load()
         .migrate()
 

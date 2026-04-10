@@ -7,7 +7,10 @@
       "Bash(PYTHONIOENCODING=utf-8 python \"C:\\\\Users\\\\user\\\\.claude\\\\skills\\\\skill-creator\\\\scripts\\\\init_skill.py\" \"kotlin-multiplatform-best-practices\" --path \"C:\\\\Users\\\\user\\\\.claude\\\\skills\")",
       "Bash(PYTHONIOENCODING=utf-8 python \"C:\\\\Users\\\\user\\\\.claude\\\\skills\\\\skill-creator\\\\scripts\\\\package_skill.py\" \"C:\\\\Users\\\\user\\\\.claude\\\\skills\\\\kotlin-multiplatform-best-practices\")",
       "Bash(./gradlew :shared:compileDebugKotlinAndroid)",
-      "Bash(./gradlew :server:build)"
+      "Bash(./gradlew :server:build)",
+      "Bash(git add:*)",
+      "Bash(git commit -m ':*)",
+      "Bash(git push:*)"
     ]
   }
 }

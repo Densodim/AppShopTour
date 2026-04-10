@@ -1,6 +1,7 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -8,6 +9,11 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
+}
+
+val localProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) load(file.inputStream())
 }
 
 kotlin {
@@ -84,9 +90,18 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    buildFeatures {
+        buildConfig = true
+    }
     buildTypes {
+        getByName("debug") {
+            val url = localProperties.getProperty("BASE_URL_DEBUG", "http://10.0.2.2:8080/api/v1")
+            buildConfigField("String", "BASE_URL", "\"$url\"")
+        }
         getByName("release") {
             isMinifyEnabled = false
+            val url = localProperties.getProperty("BASE_URL_RELEASE", "http://91.84.122.246:8080/api/v1")
+            buildConfigField("String", "BASE_URL", "\"$url\"")
         }
     }
     compileOptions {

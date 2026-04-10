@@ -17,7 +17,7 @@ class MainApplication : Application() {
         startKoin {
             androidContext(this@MainApplication)
             androidLogger(Level.DEBUG)
-            modules(sharedModules)
+            modules(sharedModules(BuildConfig.BASE_URL))
         }
     }
 }

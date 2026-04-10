@@ -7,22 +7,20 @@ import io.ktor.client.request.accept
 import io.ktor.client.request.get
 import io.ktor.http.ContentType
 
-private const val BASE_URL = "http://91.84.122.246:8080/api/v1"
-
 /**
  * API клиент для работы с /api/v1/users.
- * Каждый метод возвращает Result<T> — нет throws, нет необработанных исключений.
+ * baseUrl приходит через Koin из BuildConfig.BASE_URL (debug/release разные значения).
  */
-class UserApiClient(private val client: HttpClient) {
+class UserApiClient(private val client: HttpClient, private val baseUrl: String) {
 
     suspend fun getUsers(): Result<List<UserDto>> = runCatching {
-        client.get("$BASE_URL/users") {
+        client.get("$baseUrl/users") {
             accept(ContentType.Application.Json)
         }.body()
     }
 
     suspend fun getUserById(id: String): Result<UserDto> = runCatching {
-        client.get("$BASE_URL/users/$id") {
+        client.get("$baseUrl/users/$id") {
             accept(ContentType.Application.Json)
         }.body()
     }

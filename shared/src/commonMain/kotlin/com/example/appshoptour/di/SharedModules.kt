@@ -14,10 +14,11 @@ import org.koin.dsl.module
 /**
  * Data слой: HTTP клиент, API clients, репозитории.
  * single = один экземпляр на всё время жизни приложения.
+ * baseUrl передаётся снаружи (из BuildConfig на Android, из конфига на других платформах).
  */
-val dataModule = module {
+fun dataModule(baseUrl: String) = module {
     single { createHttpClient() }
-    singleOf(::UserApiClient)
+    single { UserApiClient(get(), baseUrl) }
     singleOf(::UserRepositoryImpl) bind UserRepository::class
 }
 
@@ -39,5 +40,6 @@ val presentationModule = module {
 
 /**
  * Список всех общих модулей — передаётся в startKoin() на каждой платформе.
+ * baseUrl приходит из платформенного кода (BuildConfig.BASE_URL на Android).
  */
-val sharedModules = listOf(dataModule, domainModule, presentationModule)
+fun sharedModules(baseUrl: String) = listOf(dataModule(baseUrl), domainModule, presentationModule)

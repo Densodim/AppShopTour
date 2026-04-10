@@ -28,7 +28,6 @@ dependencies {
     implementation(libs.exposed.java.time)
     implementation(libs.postgresql)
     implementation(libs.flyway.core)
-    implementation(libs.flyway.postgresql)
     implementation(libs.hikari)
     implementation(libs.h2)
     testImplementation(libs.ktor.serverTestHost)
