@@ -16,7 +16,7 @@ fun Application.module() {
             call.respondText("Ktor: ${Greeting().greet()}")
         }
         get("/health") {
-            call.respondText("OK")
+            call.respondText("OK 4")
         }
     }
 }
