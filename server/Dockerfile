@@ -12,6 +12,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /app/server/build/libs/server-all.jar /app/app.jar
+COPY --from=build /app/server/src/main/resources/db /app/db
 
 EXPOSE 8080
 
