@@ -7,7 +7,8 @@ import io.ktor.client.request.accept
 import io.ktor.client.request.get
 import io.ktor.http.ContentType
 
-private const val BASE_URL = "http://localhost:8080/api/v1"
+// 10.0.2.2 — специальный адрес Android эмулятора, который указывает на localhost твоего ПК
+private const val BASE_URL = "http://10.0.2.2:8080/api/v1"
 
 /**
  * API клиент для работы с /api/v1/users.

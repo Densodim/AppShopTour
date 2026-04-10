@@ -1,0 +1,60 @@
+package com.example.appshoptour.api
+
+import com.example.appshoptour.api.dto.UserResponse
+import com.example.appshoptour.database.table.UsersTable
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.response.respond
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.get
+import io.ktor.server.routing.route
+import org.jetbrains.exposed.v1.jdbc.selectAll
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+
+fun Route.usersRoutes() {
+    route("/users") {
+
+        // GET /api/v1/users — список всех пользователей
+        get {
+            val users = transaction {
+                UsersTable.selectAll().map { row ->
+                    UserResponse(
+                        id = row[UsersTable.id].value.toString(),
+                        name = row[UsersTable.name],
+                        email = row[UsersTable.email],
+                        preferredCurrency = row[UsersTable.preferredCurrency],
+                        preferredLanguage = row[UsersTable.preferredLanguage],
+                        themeMode = row[UsersTable.themeMode]
+                    )
+                }
+            }
+            call.respond(users)
+        }
+
+        // GET /api/v1/users/{id} — один пользователь по id
+        get("/{id}") {
+            val id = call.parameters["id"]
+                ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing id")
+
+            val user = transaction {
+                UsersTable.selectAll()
+                    .map { row ->
+                        UserResponse(
+                            id = row[UsersTable.id].value.toString(),
+                            name = row[UsersTable.name],
+                            email = row[UsersTable.email],
+                            preferredCurrency = row[UsersTable.preferredCurrency],
+                            preferredLanguage = row[UsersTable.preferredLanguage],
+                            themeMode = row[UsersTable.themeMode]
+                        )
+                    }
+                    .firstOrNull { it.id == id }
+            }
+
+            if (user == null) {
+                call.respond(HttpStatusCode.NotFound, "User not found")
+            } else {
+                call.respond(user)
+            }
+        }
+    }
+}
