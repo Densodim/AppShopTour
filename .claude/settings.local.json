@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /c/Home/work/chatbot -maxdepth 3 -type d -not -path */node_modules* -not -path */.next* -not -path */.git* -not -path */.idea*)",
+      "Bash(find /c/Home/work/chatbot -maxdepth 3 -type f -not -path */node_modules* -not -path */.next* -not -path */.git* -not -path */.idea*)"
+    ]
+  }
+}
