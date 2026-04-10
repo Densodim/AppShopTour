@@ -18,7 +18,6 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-    // JSON сериализация для всех ответов
     install(ContentNegotiation) {
         json(Json {
             prettyPrint = true
@@ -26,36 +25,47 @@ fun Application.module() {
         })
     }
 
-    val jdbcUrl = System.getenv("JDBC_URL")
-    val jdbcUser = System.getenv("JDBC_USER")
-    val jdbcPassword = System.getenv("JDBC_PASSWORD")
-
-    if (jdbcUrl != null && jdbcUser != null && jdbcPassword != null) {
-        val dataSource = HikariDataSource(HikariConfig().apply {
-            this.jdbcUrl = jdbcUrl
-            this.username = jdbcUser
-            this.password = jdbcPassword
-            driverClassName = "org.postgresql.Driver"
-            maximumPoolSize = 10
-        })
-
-        Flyway.configure()
-            .dataSource(dataSource)
-            .locations("classpath:db/migration")
-            .load()
-            .migrate()
-
-        Database.connect(dataSource)
-    }
+    configureDatabase()
 
     routing {
         get("/health") {
             call.respondText("OK")
         }
-
-        // Все API роуты под /api/v1/
         route("/api/v1") {
             usersRoutes()
         }
     }
+}
+
+private fun configureDatabase() {
+    val jdbcUrl = System.getenv("JDBC_URL")
+    val jdbcUser = System.getenv("JDBC_USER")
+    val jdbcPassword = System.getenv("JDBC_PASSWORD")
+
+    // Production: PostgreSQL через env vars
+    // Local dev: H2 in-memory (не нужно ничего настраивать)
+    val (url, user, password, driver) = if (jdbcUrl != null && jdbcUser != null && jdbcPassword != null) {
+        listOf(jdbcUrl, jdbcUser, jdbcPassword, "org.postgresql.Driver")
+    } else {
+        listOf(
+            "jdbc:h2:mem:appshoptour;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE",
+            "sa", "", "org.h2.Driver"
+        )
+    }
+
+    val dataSource = HikariDataSource(HikariConfig().apply {
+        this.jdbcUrl = url
+        this.username = user
+        this.password = password
+        driverClassName = driver
+        maximumPoolSize = 10
+    })
+
+    Flyway.configure()
+        .dataSource(dataSource)
+        .locations("classpath:db/migration")
+        .load()
+        .migrate()
+
+    Database.connect(dataSource)
 }
