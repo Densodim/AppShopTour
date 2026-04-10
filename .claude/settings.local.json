@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(find /c/Home/work/chatbot -maxdepth 3 -type d -not -path */node_modules* -not -path */.next* -not -path */.git* -not -path */.idea*)",
-      "Bash(find /c/Home/work/chatbot -maxdepth 3 -type f -not -path */node_modules* -not -path */.next* -not -path */.git* -not -path */.idea*)"
+      "Bash(find /c/Home/work/chatbot -maxdepth 3 -type f -not -path */node_modules* -not -path */.next* -not -path */.git* -not -path */.idea*)",
+      "Bash(python \"C:\\\\Users\\\\user\\\\.claude\\\\skills\\\\skill-creator\\\\scripts\\\\init_skill.py\" \"kotlin-multiplatform-best-practices\" --path \"C:\\\\Users\\\\user\\\\.claude\\\\skills\")",
+      "Bash(PYTHONIOENCODING=utf-8 python \"C:\\\\Users\\\\user\\\\.claude\\\\skills\\\\skill-creator\\\\scripts\\\\init_skill.py\" \"kotlin-multiplatform-best-practices\" --path \"C:\\\\Users\\\\user\\\\.claude\\\\skills\")",
+      "Bash(PYTHONIOENCODING=utf-8 python \"C:\\\\Users\\\\user\\\\.claude\\\\skills\\\\skill-creator\\\\scripts\\\\package_skill.py\" \"C:\\\\Users\\\\user\\\\.claude\\\\skills\\\\kotlin-multiplatform-best-practices\")",
+      "Bash(./gradlew :shared:compileDebugKotlinAndroid)"
     ]
   }
 }
