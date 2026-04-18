@@ -16,34 +16,24 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.appshoptour.domain.model.UiError
 import com.example.appshoptour.domain.model.User
+import com.example.appshoptour.navigation.AppNavigation
 import com.example.appshoptour.presentation.users.UsersIntent
 import com.example.appshoptour.presentation.users.UsersUiState
-import com.example.appshoptour.presentation.users.UsersViewModel
-import org.koin.compose.koinInject
 
 @Composable
 fun App() {
     AppTheme {
-        // Koin автоматически предоставляет UsersViewModel из DI-контейнера
-        val viewModel: UsersViewModel = koinInject()
-        val state by viewModel.state.collectAsState()
-
-        UsersScreen(
-            state = state,
-            onIntent = viewModel::onIntent
-        )
+        AppNavigation()
     }
 }
 
 @Composable
-private fun UsersScreen(
+fun UsersScreen(
     state: UsersUiState,
     onIntent: (UsersIntent) -> Unit
 ) {

@@ -47,10 +47,16 @@ kotlin {
     }
     
     sourceSets {
+        // Промежуточный source set для Android + Desktop JVM
+        // navigation3-ui поддерживает эти платформы, но не iOS/JS/WasmJS
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.koin.android)
+            // Navigation3 UI — только Android (тянет android-specific compose artifacts)
+            implementation(libs.navigation3.ui)
+            implementation(libs.navigation3.lifecycle)
+            implementation(libs.navigation3.adaptive)
         }
         commonMain.dependencies {
             implementation(libs.koin.compose)
@@ -62,6 +68,7 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(libs.navigation3.runtime) // KMP-совместимый
             implementation(projects.shared)
         }
         commonTest.dependencies {
