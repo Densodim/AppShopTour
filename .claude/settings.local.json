@@ -12,7 +12,17 @@
       "Bash(git commit -m ':*)",
       "Bash(git push:*)",
       "WebFetch(domain:jetbrains.github.io)",
-      "WebFetch(domain:www.jetbrains.com)"
+      "WebFetch(domain:www.jetbrains.com)",
+      "Bash(./gradlew :composeApp:run)",
+      "Bash(./gradlew :composeApp:jvmRunHot)",
+      "WebFetch(domain:www.figma.com)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "mcp__Claude_in_Chrome__navigate",
+      "mcp__Claude_in_Chrome__computer",
+      "mcp__Claude_in_Chrome__get_page_text",
+      "Bash(cp \"C:\\\\Users\\\\user\\\\Downloads\\\\Inter\\\\static\\\\Inter_18pt-Regular.ttf\" \"/c/Home/work/AppShopTour/composeApp/src/commonMain/composeResources/font/Inter_Regular.ttf\")",
+      "Bash(cp \"C:\\\\Users\\\\user\\\\Downloads\\\\Inter\\\\static\\\\Inter_18pt-Medium.ttf\" \"/c/Home/work/AppShopTour/composeApp/src/commonMain/composeResources/font/Inter_Medium.ttf\")",
+      "Bash(cp \"C:\\\\Users\\\\user\\\\Downloads\\\\Inter\\\\static\\\\Inter_18pt-SemiBold.ttf\" \"/c/Home/work/AppShopTour/composeApp/src/commonMain/composeResources/font/Inter_SemiBold.ttf\")"
     ]
   }
 }

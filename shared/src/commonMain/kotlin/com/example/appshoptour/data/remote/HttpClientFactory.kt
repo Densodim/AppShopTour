@@ -26,6 +26,6 @@ fun createHttpClient(): HttpClient = HttpClient {
 
     install(Logging) {
         logger = Logger.SIMPLE
-        level = LogLevel.HEADERS
+        level = LogLevel.INFO  // NONE в релизе, INFO/HEADERS для отладки
     }
 }

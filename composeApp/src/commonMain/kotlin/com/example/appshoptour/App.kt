@@ -30,7 +30,7 @@ import org.koin.compose.koinInject
 
 @Composable
 fun App() {
-    MaterialTheme {
+    AppTheme {
         // Koin автоматически предоставляет UsersViewModel из DI-контейнера
         val viewModel: UsersViewModel = koinInject()
         val state by viewModel.state.collectAsState()
@@ -59,7 +59,7 @@ private fun UsersScreen(
                 onRetry = { onIntent(UsersIntent.Refresh) },
                 modifier = Modifier.align(Alignment.Center)
             )
-            state.showEmpty -> EmptyView(Modifier.align(Alignment.Center))
+            state.showEmpty -> EmptyView(Modifier.align(Alignment.TopStart))
             else -> UsersList(
                 users = state.users,
                 onUserClick = { onIntent(UsersIntent.SelectUser(it.id)) }
