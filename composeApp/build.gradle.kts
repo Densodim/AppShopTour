@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 val localProperties = Properties().apply {
@@ -56,7 +57,6 @@ kotlin {
             // Navigation3 UI — только Android (тянет android-specific compose artifacts)
             implementation(libs.navigation3.ui)
             implementation(libs.navigation3.lifecycle)
-            implementation(libs.navigation3.adaptive)
         }
         commonMain.dependencies {
             implementation(libs.koin.compose)

@@ -11,9 +11,10 @@ import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,6 +25,7 @@ import com.example.appshoptour.domain.model.User
 import com.example.appshoptour.navigation.AppNavigation
 import com.example.appshoptour.presentation.users.UsersIntent
 import com.example.appshoptour.presentation.users.UsersUiState
+import com.example.appshoptour.ui.users.UserCard
 
 @Composable
 fun App() {
@@ -68,15 +70,7 @@ private fun UsersList(users: List<User>, onUserClick: (User) -> Unit) {
     }
 }
 
-@Composable
-private fun UserCard(user: User, onClick: () -> Unit) {
-    Card(modifier = Modifier.fillMaxWidth(), onClick = onClick) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = user.name, style = MaterialTheme.typography.titleMedium)
-            Text(text = user.email, style = MaterialTheme.typography.bodyMedium)
-        }
-    }
-}
+
 
 @Composable
 private fun ErrorView(error: UiError, onRetry: () -> Unit, modifier: Modifier = Modifier) {
