@@ -1,0 +1,326 @@
+openapi: "3.1.0"
+info:
+  title: AppShopTour API
+  description: REST API для мобильного приложения AppShopTour
+  version: "1.0.0"
+
+servers:
+  - url: http://localhost:8080
+    description: Local development
+
+tags:
+  - name: Health
+    description: Проверка состояния сервера
+  - name: Auth
+    description: Аутентификация и управление токенами
+  - name: Users
+    description: Управление пользователями (требует JWT)
+
+paths:
+
+  /health:
+    get:
+      tags: [Health]
+      summary: Health check
+      responses:
+        "200":
+          description: Сервер работает
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: OK
+
+  /api/v1/auth/register:
+    post:
+      tags: [Auth]
+      summary: Регистрация нового пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+            example:
+              name: Иван Петров
+              email: ivan@example.com
+              password: secret123
+      responses:
+        "201":
+          description: Пользователь создан
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "409":
+          description: Email уже зарегистрирован
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+
+  /api/v1/auth/login:
+    post:
+      tags: [Auth]
+      summary: Вход в систему
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+            example:
+              email: ivan@example.com
+              password: secret123
+      responses:
+        "200":
+          description: Успешный вход
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Неверный email или пароль
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+
+  /api/v1/auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Обновление access token
+      description: |
+        Принимает refresh token, возвращает новую пару токенов.
+        Старый refresh token **немедленно инвалидируется** (Refresh Token Rotation).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshRequest"
+      responses:
+        "200":
+          description: Токены обновлены
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Токен недействителен или истёк
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+
+  /api/v1/auth/logout:
+    post:
+      tags: [Auth]
+      summary: Выход из системы
+      description: Инвалидирует все refresh токены пользователя.
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Выход выполнен успешно
+        "401":
+          description: Токен недействителен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/users:
+    get:
+      tags: [Users]
+      summary: Список всех пользователей
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Список пользователей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v1/users/{id}:
+    get:
+      tags: [Users]
+      summary: Получить пользователя по ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: UUID пользователя
+          schema:
+            type: string
+            format: uuid
+            example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        "200":
+          description: Данные пользователя
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "400":
+          description: Некорректный UUID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: Пользователь не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Access token, полученный при login или register
+
+  schemas:
+
+    RegisterRequest:
+      type: object
+      required: [name, email, password]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          example: Иван Петров
+        email:
+          type: string
+          format: email
+          example: ivan@example.com
+        password:
+          type: string
+          minLength: 8
+          example: secret123
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: ivan@example.com
+        password:
+          type: string
+          example: secret123
+
+    RefreshRequest:
+      type: object
+      required: [refresh_token]
+      properties:
+        refresh_token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiJ9...
+
+    AuthResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: JWT access token (TTL 15 минут)
+          example: eyJhbGciOiJIUzI1NiJ9...
+        refresh_token:
+          type: string
+          description: Refresh token (TTL 30 дней)
+          example: eyJhbGciOiJIUzI1NiJ9...
+        user:
+          $ref: "#/components/schemas/UserResponse"
+          description: Присутствует только при register
+
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        name:
+          type: string
+          example: Иван Петров
+        email:
+          type: string
+          format: email
+          example: ivan@example.com
+        preferred_currency:
+          type: string
+          example: RUB
+        preferred_language:
+          type: string
+          example: ru
+        theme_mode:
+          type: string
+          example: system
+
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          example: Invalid email or password
+
+    ValidationErrorResponse:
+      type: object
+      required: [error, details]
+      properties:
+        error:
+          type: string
+          example: Validation error
+        details:
+          type: array
+          items:
+            type: string
+          example:
+            - Name is required
+            - Password must be at least 8 characters
+
+  responses:
+
+    Unauthorized:
+      description: Токен отсутствует или недействителен
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+    TooManyRequests:
+      description: Превышен лимит запросов (5 в минуту с одного IP)
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            error: Too many requests, please try again later

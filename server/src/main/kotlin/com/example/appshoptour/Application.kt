@@ -10,6 +10,8 @@ import com.example.appshoptour.auth.JwtService
 import com.example.appshoptour.api.lang
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.*
@@ -18,9 +20,12 @@ import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
 import io.ktor.server.netty.EngineMain
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.plugins.cors.routing.CORS
+import io.ktor.server.plugins.openapi.openAPI
 import io.ktor.server.plugins.ratelimit.RateLimit
 import io.ktor.server.plugins.ratelimit.RateLimitName
 import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.plugins.swagger.swaggerUI
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.json.Json
@@ -33,6 +38,17 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
+    install(CORS) {
+        anyHost()
+        allowHeader(HttpHeaders.ContentType)
+        allowHeader(HttpHeaders.Authorization)
+        allowMethod(HttpMethod.Options)
+        allowMethod(HttpMethod.Post)
+        allowMethod(HttpMethod.Put)
+        allowMethod(HttpMethod.Delete)
+        allowMethod(HttpMethod.Patch)
+    }
+
     install(ContentNegotiation) {
         json(Json {
             prettyPrint = true
@@ -90,6 +106,9 @@ fun Application.module() {
     val authService = AuthServiceImpl()
 
     routing {
+        swaggerUI(path = "swagger", swaggerFile = "openapi/documentation.yaml")
+        openAPI(path = "openapi", swaggerFile = "openapi/documentation.yaml")
+
         get("/health") {
             call.respondText("OK")
         }

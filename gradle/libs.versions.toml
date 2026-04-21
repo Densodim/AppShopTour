@@ -88,6 +88,9 @@ ktor-serverAuth = { module = "io.ktor:ktor-server-auth-jvm", version.ref = "ktor
 ktor-serverAuthJwt = { module = "io.ktor:ktor-server-auth-jwt-jvm", version.ref = "ktor" }
 ktor-serverStatusPages = { module = "io.ktor:ktor-server-status-pages", version.ref = "ktor" }
 ktor-serverRateLimit = { module = "io.ktor:ktor-server-rate-limit", version.ref = "ktor" }
+ktor-serverCors = { module = "io.ktor:ktor-server-cors", version.ref = "ktor" }
+ktor-serverOpenApi = { module = "io.ktor:ktor-server-openapi", version.ref = "ktor" }
+ktor-serverSwagger = { module = "io.ktor:ktor-server-swagger", version.ref = "ktor" }
 cryptography-core = { module = "dev.whyoleg.cryptography:cryptography-core", version.ref = "cryptography-kotlin" }
 cryptography-providerJdk = { module = "dev.whyoleg.cryptography:cryptography-provider-jdk", version.ref = "cryptography-kotlin" }
 java-jwt = { module = "com.auth0:java-jwt", version.ref = "java-jwt" }
