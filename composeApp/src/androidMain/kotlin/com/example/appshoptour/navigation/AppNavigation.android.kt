@@ -1,15 +1,20 @@
 package com.example.appshoptour.navigation
 
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.example.appshoptour.UsersScreen
 import com.example.appshoptour.presentation.users.UsersUiEvent
 import com.example.appshoptour.presentation.users.UsersViewModel
+import com.example.appshoptour.ui.navigationBar.AppNavigationBar
+import com.example.appshoptour.ui.navigationBar.TopLevelDestination
 import com.example.appshoptour.ui.userdetail.UserDetailScreen
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.compose.koinInject
@@ -20,6 +25,11 @@ actual fun AppNavigation() {
     val viewModel: UsersViewModel = koinInject()
     val state by viewModel.state.collectAsState()
 
+    val currentDestination = when (backStack.lastOrNull()) {
+        is UsersRoute -> TopLevelDestination.Users
+        else -> TopLevelDestination.Users
+    }
+
     LaunchedEffect(viewModel) {
         viewModel.events.collectLatest { event ->
             when (event) {
@@ -29,22 +39,38 @@ actual fun AppNavigation() {
         }
     }
 
-    NavDisplay(
-        backStack = backStack,
-        entryProvider = entryProvider {
-            entry<UsersRoute> {
-                UsersScreen(
-                    state = state,
-                    onIntent = viewModel::onIntent
-                )
-            }
-
-            entry<UserDetailRoute> { route ->
-                UserDetailScreen(
-                    userId = route.userId,
-                    onBack = { backStack.removeLastOrNull() }
-                )
-            }
+    // Scaffold — это "каркас" экрана с поддержкой bottomBar, topBar и т.д.
+    Scaffold(
+        bottomBar = {
+            AppNavigationBar(
+                selectedDestination = currentDestination,
+                onDestinationSelected = { destination ->
+                    when (destination) {
+                        TopLevelDestination.Users -> {
+                            backStack.clear()
+                            backStack.add(UsersRoute)
+                        }
+                    }
+                }
+            )
         }
-    )
+    ) { innerPadding ->
+        // innerPadding — это отступ, который Scaffold автоматически
+        // рассчитывает чтобы контент не перекрывался bottomBar'ом
+        NavDisplay(
+            backStack = backStack,
+            onBack = { backStack.removeLastOrNull() },
+            modifier = Modifier.padding(innerPadding),
+            entryProvider = entryProvider {
+                entry<UsersRoute> { UsersScreen(state, viewModel::onIntent) }
+                entry<UserDetailRoute> { route ->
+                    UserDetailScreen(
+                        userId = route.userId,
+                        onBack = { backStack.removeLastOrNull() }
+                    )
+                }
+            }
+        )
+    }
+
 }

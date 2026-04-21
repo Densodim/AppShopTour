@@ -1,6 +1,7 @@
 package com.example.appshoptour.data.remote
 
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.HttpSend
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
@@ -9,12 +10,10 @@ import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-/**
- * Фабрика HTTP клиента.
- * HttpClient() без параметра движка — Ktor автоматически выбирает
- * движок по classpath: OkHttp (Android), Darwin (iOS), CIO (JVM), Js (Web).
- */
-fun createHttpClient(): HttpClient = HttpClient {
+fun createHttpClient(
+    tokenStorage: TokenStorage? = null,
+    baseUrl: String = ""
+): HttpClient = HttpClient {
     install(ContentNegotiation) {
         json(Json {
             ignoreUnknownKeys = true
@@ -23,9 +22,13 @@ fun createHttpClient(): HttpClient = HttpClient {
             explicitNulls = false
         })
     }
-
     install(Logging) {
         logger = Logger.SIMPLE
-        level = LogLevel.INFO  // NONE в релизе, INFO/HEADERS для отладки
+        level = LogLevel.INFO
+    }
+    install(HttpSend)
+}.also { client ->
+    if (tokenStorage != null) {
+        AuthInterceptor(tokenStorage, baseUrl).install(client)
     }
 }

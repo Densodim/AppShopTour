@@ -14,6 +14,7 @@ object UsersTable : UUIDTable(name = "users") {
     val name = varchar("name", length = 150)
     val email = varchar("email", length = 255).uniqueIndex()
     val passwordHash = varchar("password_hash", length = 255)
+    val passwordSalt = varchar("password_salt", length = 255).nullable()
     val preferredCurrency = varchar("preferred_currency", length = 3).default("EUR")
     val preferredLanguage = varchar("preferred_language", length = 10).default("ru")
     val themeMode = varchar("theme_mode", length = 20).default("dark")

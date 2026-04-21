@@ -33,7 +33,14 @@
       "Bash(curl -s \"https://repo1.maven.org/maven2/org/jetbrains/androidx/navigation3/navigation3-ui/maven-metadata.xml\")",
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(v.get\\('name',''\\), v.get\\('attributes',{}\\).get\\('org.jetbrains.kotlin.platform.type',''\\)\\) for v in d.get\\('variants',[]\\)]\")",
       "Bash(curl -s \"https://maven.pkg.jetbrains.space/public/p/compose/dev/org/jetbrains/androidx/navigation3/navigation3-runtime/maven-metadata.xml\")",
-      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(doc['a'], doc.get\\('latestVersion',''\\)\\) for doc in d['response']['docs']]\")"
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(doc['a'], doc.get\\('latestVersion',''\\)\\) for doc in d['response']['docs']]\")",
+      "WebFetch(domain:whyoleg.github.io)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(./gradlew :server:compileKotlin)",
+      "Bash(./gradlew :server:test)",
+      "Bash(./gradlew :server:test --tests \"com.example.appshoptour.ApplicationTest\")"
     ]
   }
 }
