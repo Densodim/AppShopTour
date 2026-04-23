@@ -40,7 +40,9 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(./gradlew :server:compileKotlin)",
       "Bash(./gradlew :server:test)",
-      "Bash(./gradlew :server:test --tests \"com.example.appshoptour.ApplicationTest\")"
+      "Bash(./gradlew :server:test --tests \"com.example.appshoptour.ApplicationTest\")",
+      "Bash(git commit -m ' *)",
+      "Bash(dir \"C:\\\\Home\\\\work\\\\AppShopTour\\\\shared\\\\src\" /b)"
     ]
   }
 }

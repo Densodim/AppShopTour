@@ -12,3 +12,5 @@ data object UsersRoute : NavKey
 // @Serializable data object CatalogRoute : NavKey
  @Serializable
  data class UserDetailRoute(val userId: String) : NavKey
+
+@Serializable data object OnboardingRoute: NavKey

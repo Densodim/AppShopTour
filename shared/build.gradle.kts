@@ -41,6 +41,8 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             // Coroutines
             implementation(libs.kotlinx.coroutines.core)
+            //multiplatform-settings
+            implementation(libs.multiplatform.settings)
         }
 
         androidMain.dependencies {

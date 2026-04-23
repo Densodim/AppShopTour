@@ -1,8 +1,11 @@
 package com.example.appshoptour.di
 
+import com.example.appshoptour.createSettings
+import com.example.appshoptour.data.preferences.OnboardingPreferencesImpl
 import com.example.appshoptour.data.remote.UserApiClient
 import com.example.appshoptour.data.remote.createHttpClient
 import com.example.appshoptour.data.repository.UserRepositoryImpl
+import com.example.appshoptour.domain.preferences.OnboardingPreferences
 import com.example.appshoptour.domain.repository.UserRepository
 import com.example.appshoptour.domain.usecase.GetUsersUseCase
 import com.example.appshoptour.presentation.users.UsersViewModel
@@ -42,4 +45,14 @@ val presentationModule = module {
  * Список всех общих модулей — передаётся в startKoin() на каждой платформе.
  * baseUrl приходит из платформенного кода (BuildConfig.BASE_URL на Android).
  */
-fun sharedModules(baseUrl: String) = listOf(dataModule(baseUrl), domainModule, presentationModule)
+fun sharedModules(baseUrl: String) = listOf(
+    dataModule(baseUrl),
+    domainModule,
+    presentationModule,
+    preferencesModule
+)
+
+val preferencesModule = module {
+    single { createSettings() }
+    single<OnboardingPreferences> { OnboardingPreferencesImpl(get()) }
+}
