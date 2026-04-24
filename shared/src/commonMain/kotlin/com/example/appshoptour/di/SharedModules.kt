@@ -2,12 +2,18 @@ package com.example.appshoptour.di
 
 import com.example.appshoptour.createSettings
 import com.example.appshoptour.data.preferences.OnboardingPreferencesImpl
+import com.example.appshoptour.data.remote.AuthApiClient
+import com.example.appshoptour.data.remote.TokenStorage
+import com.example.appshoptour.data.remote.TokenStorageImpl
 import com.example.appshoptour.data.remote.UserApiClient
 import com.example.appshoptour.data.remote.createHttpClient
+import com.example.appshoptour.data.repository.AuthRepositoryImpl
 import com.example.appshoptour.data.repository.UserRepositoryImpl
 import com.example.appshoptour.domain.preferences.OnboardingPreferences
+import com.example.appshoptour.domain.repository.AuthRepository
 import com.example.appshoptour.domain.repository.UserRepository
 import com.example.appshoptour.domain.usecase.GetUsersUseCase
+import com.example.appshoptour.presentation.auth.AuthViewModel
 import com.example.appshoptour.presentation.users.UsersViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -20,8 +26,11 @@ import org.koin.dsl.module
  * baseUrl передаётся снаружи (из BuildConfig на Android, из конфига на других платформах).
  */
 fun dataModule(baseUrl: String) = module {
-    single { createHttpClient() }
+    single<TokenStorage> { TokenStorageImpl(get()) }
+    single { createHttpClient(get(), baseUrl) }
     single { UserApiClient(get(), baseUrl) }
+    single { AuthApiClient(get(), baseUrl) }
+    singleOf(::AuthRepositoryImpl) bind AuthRepository::class
     singleOf(::UserRepositoryImpl) bind UserRepository::class
 }
 
@@ -38,6 +47,7 @@ val domainModule = module {
  * factory = новый ViewModel при каждом запросе (жизненный цикл управляется экраном).
  */
 val presentationModule = module {
+    factoryOf(::AuthViewModel)
     factoryOf(::UsersViewModel)
 }
 

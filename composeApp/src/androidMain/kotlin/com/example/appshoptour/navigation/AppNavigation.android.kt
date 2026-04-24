@@ -15,8 +15,11 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.example.appshoptour.UsersScreen
 import com.example.appshoptour.domain.preferences.OnboardingPreferences
+import com.example.appshoptour.presentation.auth.AuthUiEvent
+import com.example.appshoptour.presentation.auth.AuthViewModel
 import com.example.appshoptour.presentation.users.UsersUiEvent
 import com.example.appshoptour.presentation.users.UsersViewModel
+import com.example.appshoptour.ui.auth.AuthScreen
 import com.example.appshoptour.ui.navigationBar.AppNavigationBar
 import com.example.appshoptour.ui.navigationBar.TopLevelDestination
 import com.example.appshoptour.ui.onboarding.OnboardingScreen
@@ -26,32 +29,24 @@ import org.koin.compose.koinInject
 
 @Composable
 actual fun AppNavigation() {
+    val usersViewModel: UsersViewModel = koinInject()
+    val authViewModel: AuthViewModel = koinInject()
     val onboardingPreferences: OnboardingPreferences = koinInject()
-    // Временный учебный флаг.
-    var hasSeenOnboarding by rememberSaveable { mutableStateOf(onboardingPreferences.isCompleted()) }
+    val usersState by usersViewModel.state.collectAsState()
+    val authState by authViewModel.state.collectAsState()
 
-    // Выбираем стартовый экран один раз при создании navigation state.
-    val startDestination = if (hasSeenOnboarding) {
-        UsersRoute
-    }else{
-        OnboardingRoute
+    var hasSeenOnboarding by rememberSaveable {
+        mutableStateOf(onboardingPreferences.isCompleted())
     }
 
+    val startDestination = if (hasSeenOnboarding) AuthRoute else OnboardingRoute
     val backStack = rememberNavBackStack(startDestination)
     val currentRoute = backStack.lastOrNull()
+    val showBottomBar = currentRoute is UsersRoute
+    val currentDestination = TopLevelDestination.Users
 
-    val viewModel: UsersViewModel = koinInject()
-    val state by viewModel.state.collectAsState()
-
-    val currentDestination = when (currentRoute) {
-        is UsersRoute -> TopLevelDestination.Users
-        else -> TopLevelDestination.Users
-    }
-
-    val showBottomBar = currentRoute is UsersRoute || currentRoute is UserDetailRoute
-
-    LaunchedEffect(viewModel) {
-        viewModel.events.collectLatest { event ->
+    LaunchedEffect(usersViewModel) {
+        usersViewModel.events.collectLatest { event ->
             when (event) {
                 is UsersUiEvent.NavigateToDetail -> backStack.add(UserDetailRoute(event.userId))
                 is UsersUiEvent.ShowSnackbar -> Unit
@@ -59,10 +54,20 @@ actual fun AppNavigation() {
         }
     }
 
-    // Scaffold — это "каркас" экрана с поддержкой bottomBar, topBar и т.д.
+    LaunchedEffect(authViewModel) {
+        authViewModel.events.collectLatest { event ->
+            when (event) {
+                AuthUiEvent.AuthSuccess -> {
+                    backStack.clear()
+                    backStack.add(UsersRoute)
+                }
+            }
+        }
+    }
+
     Scaffold(
         bottomBar = {
-            if (showBottomBar){
+            if (showBottomBar) {
                 AppNavigationBar(
                     selectedDestination = currentDestination,
                     onDestinationSelected = { destination ->
@@ -77,24 +82,37 @@ actual fun AppNavigation() {
             }
         }
     ) { innerPadding ->
-        // innerPadding — это отступ, который Scaffold автоматически
-        // рассчитывает чтобы контент не перекрывался bottomBar'ом
         NavDisplay(
             backStack = backStack,
             onBack = { backStack.removeLastOrNull() },
             modifier = Modifier.padding(innerPadding),
             entryProvider = entryProvider {
                 entry<OnboardingRoute> {
-                    OnboardingScreen (
+                    OnboardingScreen(
                         onContinue = {
                             onboardingPreferences.setCompleted(true)
                             hasSeenOnboarding = true
+
                             backStack.clear()
-                            backStack.add(UsersRoute)
+                            backStack.add(AuthRoute)
                         }
                     )
                 }
-                entry<UsersRoute> { UsersScreen(state, viewModel::onIntent) }
+
+                entry<AuthRoute> {
+                    AuthScreen(
+                        state = authState,
+                        onIntent = authViewModel::onInstant
+                    )
+                }
+
+                entry<UsersRoute> {
+                    UsersScreen(
+                        state = usersState,
+                        onIntent = usersViewModel::onIntent
+                    )
+                }
+
                 entry<UserDetailRoute> { route ->
                     UserDetailScreen(
                         userId = route.userId,
@@ -104,5 +122,4 @@ actual fun AppNavigation() {
             }
         )
     }
-
 }
